@@ -1,0 +1,5 @@
+set GOOS=linux
+set GOARCH=arm
+go build -o webook .
+docker rmi -f shumian/webook:v0.0.1 2>nul
+docker build -t shumian/webook:v0.0.1 .
