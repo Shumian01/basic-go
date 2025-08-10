@@ -1,23 +1,20 @@
 apiVersion: apps/v1
-kind : Deployment
+kind: Deployment
 metadata:
   name: webook
 spec:
-#副本数量
   replicas: 3
   selector:
     matchLabels:
       app: webook
-#template描述的是 你的POD 是什么样子的
   template:
     metadata:
       name: webook
       labels:
         app: webook
-# POD 的具体信息
     spec:
       containers:
-       - name: webook
-         image: shumian/webook:v0.0.1
-         ports:
-           - containerPort: 8080   #对应main的端口
+        - name: webook
+          image: shumian/webook:v0.0.1
+          ports:
+            - containerPort: 8080

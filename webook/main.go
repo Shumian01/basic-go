@@ -1,6 +1,7 @@
 package main
 
 import (
+	"basic-go/webook/config"
 	"basic-go/webook/internal/repository"
 	"basic-go/webook/internal/repository/dao"
 	"basic-go/webook/internal/service"
@@ -14,20 +15,16 @@ import (
 	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"net/http"
 	"strings"
 	"time"
 )
 
 func main() {
-	//db := InitDB()          //初始化DB
-	//server := InitUserWeb() //初始化server
-	//u := InitUser(db)
-	//u.RegisterUser(server)
-	server := gin.Default()
-	server.GET("/hello", func(ctx *gin.Context) {
-		ctx.String(http.StatusOK, "hello,xzl")
-	})
+	db := InitDB()          //初始化DB
+	server := InitUserWeb() //初始化server
+	u := InitUser(db)
+	u.RegisterUser(server)
+
 	server.Run(":8080")
 }
 
@@ -36,7 +33,7 @@ func InitUserWeb() *gin.Engine {
 	//redisClient := redis.NewClient(&redsi)
 	//server.Use(ratelimit.NewBuilder())
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: config.Config.Redis.Addr,
 	})
 	server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
 
@@ -91,7 +88,7 @@ func InitUser(db *gorm.DB) *web.UserHandler {
 }
 
 func InitDB() *gorm.DB {
-	db, err := gorm.Open(mysql.Open("root:root@tcp(localhost:13316)/webook"))
+	db, err := gorm.Open(mysql.Open(config.Config.DB.DSN))
 	if err != nil {
 		//我只会在初始化过程panic
 		//panic 相当于整个goroutine 结束

@@ -3,12 +3,11 @@ kind: Service
 metadata:
   name: webook
 spec:
+  type: LoadBalancer
   selector:
     app: webook
   ports:
     - protocol: TCP
       name: http
-      port: 80
+      port: 81
       targetPort: 8080
-  type: LoadBalancer
-  

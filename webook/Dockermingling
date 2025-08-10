@@ -1,5 +1,10 @@
 set GOOS=linux
-set GOARCH=arm
-go build -o webook .
-docker rmi -f shumian/webook:v0.0.1 2>nul
+set GOARCH=amd64
+go build -o -tags=k8s webook .
+docker rmi -f shumian/webook:v0.0.1
 docker build -t shumian/webook:v0.0.1 .
+
+
+
+kubectl delete deployment webook
+kubectl apply -f k8s-webook-deployment.yaml
