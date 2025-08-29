@@ -1,22 +1,18 @@
 package main
 
 import (
-	"basic-go/webook/config"
-	"basic-go/webook/internal/repository"
-	"basic-go/webook/internal/repository/dao"
-	"basic-go/webook/internal/service"
-	"basic-go/webook/internal/web"
-	"basic-go/webook/internal/web/middleware"
-	"basic-go/webook/pkg/ginx/middleware/ratelimit"
 	"github.com/gin-contrib/cors"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/memstore"
 	"github.com/gin-gonic/gin"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"strings"
 	"time"
+	"webook/config"
+	"webook/internal/repository"
+	"webook/internal/repository/dao"
+	"webook/internal/service"
+	"webook/internal/web"
+	"webook/internal/web/middleware"
 )
 
 func main() {
@@ -32,10 +28,10 @@ func InitUserWeb() *gin.Engine {
 	server := gin.Default()
 	//redisClient := redis.NewClient(&redsi)
 	//server.Use(ratelimit.NewBuilder())
-	redisClient := redis.NewClient(&redis.Options{
-		Addr: config.Config.Redis.Addr,
-	})
-	server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
+	//redisClient := redis.NewClient(&redis.Options{
+	//	Addr: config.Config.Redis.Addr,
+	//})
+	//server.Use(ratelimit.NewBuilder(redisClient, time.Second, 100).Build())
 
 	server.Use(cors.New(cors.Config{
 		AllowOrigins: []string{"http://localhost:3000"},
@@ -69,8 +65,8 @@ func InitUserWeb() *gin.Engine {
 	//if err != nil {
 	//	panic(err)
 	//}
-	store := memstore.NewStore([]byte("dopWHWvRXiyHULAkR90XQsR06Uvl7PFX"), []byte("iIUJ20V9jJlEYjlfkf17Rk8deT2v2Qo7"))
-	server.Use(sessions.Sessions("mysession", store))
+	//store := memstore.NewStore([]byte("dopWHWvRXiyHULAkR90XQsR06Uvl7PFX"), []byte("iIUJ20V9jJlEYjlfkf17Rk8deT2v2Qo7"))
+	//server.Use(sessions.Sessions("mysession", store))
 
 	//server.Use(middleware.NewLoginMiddlewareBuilder().IgnorePaths("/users/login").IgnorePaths("/users/signup").Build())
 	server.Use(middleware.NewLoginJWTMiddlewareBuilder().

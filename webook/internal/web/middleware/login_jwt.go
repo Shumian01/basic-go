@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"basic-go/webook/internal/web"
+	"webook/internal/web"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"log"

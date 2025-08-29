@@ -1,8 +1,6 @@
 package web
 
 import (
-	"basic-go/webook/internal/domain"
-	"basic-go/webook/internal/service"
 	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -10,6 +8,8 @@ import (
 	"net/http"
 	"regexp"
 	"time"
+	"webook/internal/domain"
+	"webook/internal/service"
 )
 
 type UserHandler struct {
@@ -114,7 +114,7 @@ func (u *UserHandler) LoginJWT(ctx *gin.Context) {
 	//比如 带userID
 	claims := UserClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 30)),
 		},
 		Uid:       user.Id,
 		UserAgent: ctx.Request.UserAgent(),
