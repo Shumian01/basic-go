@@ -1,11 +1,16 @@
 package service
 
 import (
-	"webook/internal/domain"
-	"webook/internal/repository"
 	"context"
 	"errors"
+	"fmt"
+	"github.com/goccy/go-json"
+	"github.com/redis/go-redis/v9"
 	"golang.org/x/crypto/bcrypt"
+	"time"
+	"webook/internal/domain"
+	"webook/internal/repository"
+	"webook/internal/repository/cache"
 )
 
 var ErrUserDuplicatedEmail = repository.ErrUserDuplicatedEmail
@@ -13,7 +18,8 @@ var ErrInvalidUserOrPassword = errors.New("账号或者密码不对")
 var ErrUserNotFound = repository.ErrUserNotFound
 
 type UserService struct {
-	repo *repository.UserRepository
+	repo  *repository.UserRepository
+	redis *redis.Client
 }
 
 func NewUserService(repo *repository.UserRepository) *UserService {
@@ -28,7 +34,18 @@ func (svc *UserService) SignUp(ctx context.Context, u domain.User) error {
 		return err
 	}
 	u.Password = string(hash)
-	return svc.repo.Create(ctx, u)
+	err = svc.repo.Create(ctx, u)
+	if err != nil {
+		return err
+	}
+	//
+	val, err := json.Marshal(u)
+	if err != nil {
+		return err
+	}
+	//要求id不为0
+	err = svc.redis.Set(ctx, fmt.Sprintf("user:info:%d", u.Id), val, time.Minute*60).Err()
+	return err
 }
 
 func (svc *UserService) Login(ctx context.Context, email string, password string) (domain.User, error) {
@@ -49,4 +66,9 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 		return domain.User{}, ErrInvalidUserOrPassword
 	}
 	return u, nil
+}
+func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
+	u, err := svc.repo.FindById(ctx, id)
+	//没这个数据 去数据库找
+
 }

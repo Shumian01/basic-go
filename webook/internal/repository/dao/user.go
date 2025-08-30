@@ -28,6 +28,12 @@ func (dao *UserDAO) FindByEmail(ctx context.Context, email string) (User, error)
 	//err := dao.db.WithContext(ctx).First(&u, "email = ?").Error
 	return u, err
 }
+func (dao *UserDAO) FindById(ctx context.Context, id int64) (User, error) {
+	var u User
+	err := dao.db.WithContext(ctx).Where("id = ?", id).First(&u).Error
+	//err := dao.db.WithContext(ctx).First(&u, "email = ?").Error
+	return u, err
+}
 
 func (dao *UserDAO) Insert(ctx context.Context, u User) error {
 	//存毫秒
