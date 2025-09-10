@@ -13,12 +13,14 @@ import (
 )
 
 type UserHandler struct {
-	svc *service.UserService
+	svc     *service.UserService
+	codeSvc *service.CodeService
 }
 
-func NewUserHandler(svc *service.UserService) *UserHandler {
+func NewUserHandler(svc *service.UserService, codeSvc *service.CodeService) *UserHandler {
 	return &UserHandler{
-		svc: svc,
+		svc:     svc,
+		codeSvc: codeSvc,
 	}
 }
 
@@ -30,6 +32,35 @@ func (u *UserHandler) RegisterUser(server *gin.Engine) {
 	ug.POST("/login", u.LoginJWT)
 	//ug.POST("/login", u.Login)
 	ug.POST("/edit", u.Edit)
+	//put "/login_sms/code/send" 发验证码
+	//post "/login_sms/code/send" 验证验证码
+	ug.POST("/login_sms/code/send", u.SendLoginSMSCode)
+	ug.POST("/login_sms", u.LoginSMS)
+}
+func (u *UserHandler) LoginSMS(ctx *gin.Context) {
+
+}
+func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
+	type Req struct {
+		Phone string `json:"phone"`
+	}
+	var req Req
+	if err := ctx.Bind(&req); err != nil {
+		return
+	}
+
+	const biz = "login"
+	err := u.codeSvc.Send(ctx, biz, req.Phone)
+	if err != nil {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 5,
+			Msg:  "发送失败",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, Result{
+		Msg: "发送成功",
+	})
 }
 
 func (u *UserHandler) Signup(ctx *gin.Context) {

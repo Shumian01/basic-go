@@ -56,7 +56,7 @@ func (r *UserRepository) FindById(ctx context.Context, id int64) (domain.User, e
 		return u, nil
 	}
 
-	//if err == cache.ErrUserNotFound {
+	//if err == lua.ErrUserNotFound {
 	//	//没这个数据 去数据库找
 	//}
 	ue, err := r.dao.FindById(ctx, id)

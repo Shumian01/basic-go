@@ -10,7 +10,6 @@ import (
 	"time"
 	"webook/internal/domain"
 	"webook/internal/repository"
-	"webook/internal/repository/cache"
 )
 
 var ErrUserDuplicatedEmail = repository.ErrUserDuplicatedEmail
@@ -67,8 +66,9 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 	}
 	return u, nil
 }
-func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
-	u, err := svc.repo.FindById(ctx, id)
-	//没这个数据 去数据库找
 
-}
+//func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
+//	u, err := svc.repo.FindById(ctx, id)
+//	//没这个数据 去数据库找
+//	return do
+//}
