@@ -12,7 +12,7 @@ import (
 	"webook/internal/repository"
 )
 
-var ErrUserDuplicatedEmail = repository.ErrUserDuplicatedEmail
+var ErrUserDuplicated = repository.ErrUserDuplicated
 var ErrInvalidUserOrPassword = errors.New("账号或者密码不对")
 var ErrUserNotFound = repository.ErrUserNotFound
 
@@ -58,7 +58,6 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 		return domain.User{}, err
 	}
 	//比较密码
-
 	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
 		//DEBUG
@@ -66,9 +65,24 @@ func (svc *UserService) Login(ctx context.Context, email string, password string
 	}
 	return u, nil
 }
+func (svc *UserService) FindOrCreate(ctx context.Context, phone string) (domain.User, error) {
+	u, err := svc.repo.FindByPhone(ctx, phone)
+	if err != repository.ErrUserNotFound {
+		return u, err
+	}
+	//你明确知道没有这个用户
+	err = svc.repo.Create(ctx, domain.User{
+		Phone: phone,
+	})
+	if err != nil && err != repository.ErrUserDuplicated {
+		return u, err
+	}
+	//因为这里会遇到主从延迟的问题
+	return svc.repo.FindByPhone(ctx, phone)
+}
 
-//func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
-//	u, err := svc.repo.FindById(ctx, id)
-//	//没这个数据 去数据库找
-//	return do
-//}
+func (svc *UserService) Profile(ctx context.Context, id int64) (domain.User, error) {
+	u, err := svc.repo.FindById(ctx, id)
+	//没这个数据 去数据库找
+	return u, err
+}

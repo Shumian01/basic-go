@@ -10,6 +10,11 @@ import (
 
 const codeTpliId = "1877556"
 
+var (
+	ErrCodeVerifyTooManyTimes = repository.ErrCodeVerifyTooManyTimes
+	ErrCodeSendTooMany        = repository.ErrSetCodeTooMany
+)
+
 type CodeService struct {
 	repo   *repository.CodeRepository
 	smsSvc sms.Service
@@ -23,7 +28,7 @@ func NewCodeService(repo *repository.CodeRepository,
 	}
 }
 
-//Send 发验证码 我需要什么参数
+// Send 发验证码 我需要什么参数
 func (svc *CodeService) Send(ctx context.Context,
 	biz string, phone string) error {
 	//phone_code:login:150xxxxx

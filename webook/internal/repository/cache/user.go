@@ -18,18 +18,18 @@ type UserCache struct {
 	expiration time.Duration
 }
 
-//A 用到了B, B一定是接口
-//A 用到了B ,B一定是A的字段
-//A 用到了B, A绝对不初始化B 而是从外面注入
-func NewUserCache(client redis.Cmdable, expiration time.Duration) *UserCache {
+// A 用到了B, B一定是接口
+// A 用到了B ,B一定是A的字段
+// A 用到了B, A绝对不初始化B 而是从外面注入
+func NewUserCache(client redis.Cmdable) *UserCache {
 	return &UserCache{
 		client:     client,
 		expiration: time.Minute * 15,
 	}
 }
 
-//只要err 为nil 就认为缓存里有数据
-//如果没有数据 返回一个特定的error
+// 只要err 为nil 就认为缓存里有数据
+// 如果没有数据 返回一个特定的error
 func (cache *UserCache) Get(ctx context.Context, id int64) (domain.User, error) {
 	key := cache.Key(id)
 	//数据不存在 err=redis.Nil
