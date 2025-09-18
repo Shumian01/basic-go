@@ -27,7 +27,7 @@ func InitMiddlewares(redisClient redis.Cmdable) []gin.HandlerFunc {
 			IgnorePaths("/users/signup").
 			IgnorePaths("/users/login_sms/code/send").
 			IgnorePaths("/users/login_sms").
-			IgnorePaths("/users/lo in").Build(),
+			IgnorePaths("/users/login").Build(),
 		//限流中间件
 		ratelimit.NewBuilder(redisClient, time.Second, 100).Build(),
 	}

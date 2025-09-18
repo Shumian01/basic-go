@@ -1,13 +1,13 @@
 package middleware
 
 import (
-	"webook/internal/web"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"net/http"
 	"strings"
 	"time"
+	"webook/internal/web"
 )
 
 // LoginJWTMiddlewareBuilder  JWT登录校验
@@ -83,6 +83,6 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			ctx.Header("x-jwt-token", tokenStr)
 		}
 
-		ctx.Set("claims", claims)
+		ctx.Set("user", claims)
 	}
 }

@@ -259,9 +259,75 @@ func (u *UserHandler) Login(ctx *gin.Context) {
 	return
 }
 
-func (u *UserHandler) Edit(ctx *gin.Context) {
-	ctx.String(http.StatusOK, "编辑接口待实现")
+func (h *UserHandler) Edit(ctx *gin.Context) {
+	type Req struct {
+		Nickname string `json:"nickname"`
+		AboutMe  string `json:"aboutMe"`
+		// 年月日: yyyy-MM-dd
+		Birthday string `json:"birthday"`
+	}
+	var req Req
+
+	// 1) 绑定错误 -> 400 + JSON
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 1,
+			"msg":  "请求格式错误",
+		})
+		return
+	}
+	fmt.Println(req)
+
+	// 2) 未登录 -> 401 + JSON
+	u, exists := ctx.Get("user")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"code": 1,
+			"msg":  "未登录",
+		})
+		return
+	}
+	uc, ok := u.(*UserClaims) // 确保类型与中间件一致（指针/包名）
+	if !ok {
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"code": 1,
+			"msg":  "未登录",
+		})
+		return
+	}
+
+	// 3) 生日校验 -> 400+JSON（如果允许为空，可先判断空串再 Parse）
+	birthday, err := time.Parse(time.DateOnly, req.Birthday)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 1,
+			"msg":  "生日格式不对，需 yyyy-MM-dd",
+		})
+		return
+	}
+
+	// 4) 更新出错 -> 500+JSON
+	err = h.svc.UpdateNonSensitiveInfo(ctx, domain.User{
+		Id:       uc.Uid,
+		Nickname: req.Nickname,
+		AboutMe:  req.AboutMe,
+		Birthday: birthday,
+	})
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"code": 5,
+			"msg":  "系统异常",
+		})
+		return
+	}
+
+	// 5) 成功 -> 200+JSON
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": 0,
+		"msg":  "更新成功",
+	})
 }
+
 func (u *UserHandler) LogOut(ctx *gin.Context) {
 	sees := sessions.Default(ctx)
 	//我可以随便设置值了
@@ -282,15 +348,30 @@ func (u *UserHandler) Profile(ctx *gin.Context) {
 	ctx.String(http.StatusOK, "czh 的个人主页")
 
 }
-func (u *UserHandler) ProfileJWT(ctx *gin.Context) {
+func (h *UserHandler) ProfileJWT(ctx *gin.Context) {
 	type Profile struct {
-		Email    string
-		Phone    string
-		Nickname string
-		Birthday string
-		AboutMe  string
+		Nickname string `json:"Nickname"`
+		Email    string `json:"Email"`
+		AboutMe  string `json:"AboutMe"`
+		Birthday string `json:"Birthday"`
 	}
-
+	uc, ok := ctx.MustGet("user").(*UserClaims)
+	if !ok {
+		ctx.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
+	u, err := h.svc.Profile(ctx, uc.Uid)
+	if err != nil {
+		ctx.String(http.StatusOK, "系统异常")
+		return
+	}
+	fmt.Println(u)
+	ctx.JSON(http.StatusOK, Profile{
+		Nickname: u.Nickname,
+		Email:    u.Email,
+		AboutMe:  u.AboutMe,
+		Birthday: u.Birthday.Format(time.DateOnly),
+	})
 }
 
 type UserClaims struct {

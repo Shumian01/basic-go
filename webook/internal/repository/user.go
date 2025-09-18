@@ -22,6 +22,7 @@ type UserRepository interface {
 	FindByEmail(ctx context.Context, email string) (domain.User, error)
 	FindById(ctx context.Context, id int64) (domain.User, error)
 	Create(ctx context.Context, u domain.User) error
+	UpdateNonZeroFields(ctx context.Context, u domain.User) error
 }
 type CachedUserRepository struct {
 	dao   dao.UserDAO
@@ -94,7 +95,11 @@ func (r *CachedUserRepository) FindById(ctx context.Context, id int64) (domain.U
 	//缓存没有数据
 	//缓存出错了
 }
-func (r *CachedUserRepository) domainToEntity(u domain.User) dao.User {
+func (r *CachedUserRepository) UpdateNonZeroFields(ctx context.Context,
+	u domain.User) error {
+	return r.dao.UpdateById(ctx, r.domainToEntity(u))
+}
+func (ropo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 	return dao.User{
 		Id: u.Id,
 		Email: sql.NullString{
@@ -106,7 +111,9 @@ func (r *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 			Valid:  u.Phone != "",
 		},
 		Password: u.Password,
-		Ctime:    u.Ctime.UnixMilli(),
+		Birthday: u.Birthday.UnixMilli(),
+		AboutMe:  u.AboutMe,
+		Nickname: u.Nickname,
 	}
 }
 
@@ -116,6 +123,8 @@ func (r *CachedUserRepository) entityToDomain(u dao.User) domain.User {
 		Email:    u.Email.String,
 		Phone:    u.Phone.String,
 		Password: u.Password,
-		Ctime:    time.UnixMilli(u.Ctime),
+		AboutMe:  u.AboutMe,
+		Nickname: u.Nickname,
+		Birthday: time.UnixMilli(u.Birthday),
 	}
 }

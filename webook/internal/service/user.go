@@ -17,6 +17,7 @@ type UserService interface {
 	Login(ctx context.Context, email string, password string) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
 	Profile(ctx context.Context, id int64) (domain.User, error)
+	UpdateNonSensitiveInfo(ctx context.Context, user domain.User) error
 }
 type userService struct {
 	repo repository.UserRepository
@@ -68,6 +69,10 @@ func (svc *userService) FindOrCreate(ctx context.Context, phone string) (domain.
 	}
 	//因为这里会遇到主从延迟的问题
 	return svc.repo.FindByPhone(ctx, phone)
+}
+func (svc *userService) UpdateNonSensitiveInfo(ctx context.Context,
+	user domain.User) error {
+	return svc.repo.UpdateNonZeroFields(ctx, user)
 }
 
 func (svc *userService) Profile(ctx context.Context, id int64) (domain.User, error) {
