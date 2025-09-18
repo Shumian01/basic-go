@@ -6,7 +6,6 @@ import (
 	"errors"
 	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"time"
 )
 
@@ -32,7 +31,7 @@ func NewUserDAO(db *gorm.DB) UserDAO {
 	}
 }
 func (dao *GORMUserDAO) UpdateById(ctx context.Context, entity User) error {
-	tx := dao.db.WithContext(ctx).
+	return dao.db.WithContext(ctx).
 		Model(&User{}).
 		Where("id = ?", entity.Id).
 		Updates(map[string]any{
@@ -40,9 +39,7 @@ func (dao *GORMUserDAO) UpdateById(ctx context.Context, entity User) error {
 			"nickname": entity.Nickname,
 			"birthday": entity.Birthday,
 			"about_me": entity.AboutMe,
-		})
-	log.Printf("update rows=%d err=%v", tx.RowsAffected, tx.Error)
-	return tx.Error
+		}).Error
 
 }
 func (dao *GORMUserDAO) FindByEmail(ctx context.Context, email string) (User, error) {

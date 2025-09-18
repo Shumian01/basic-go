@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
@@ -97,7 +98,20 @@ func (r *CachedUserRepository) FindById(ctx context.Context, id int64) (domain.U
 }
 func (r *CachedUserRepository) UpdateNonZeroFields(ctx context.Context,
 	u domain.User) error {
-	return r.dao.UpdateById(ctx, r.domainToEntity(u))
+	if err := r.dao.UpdateById(ctx, r.domainToEntity(u)); err != nil {
+		return err
+	}
+	us, err := r.dao.FindById(ctx, u.Id)
+	uss := r.entityToDomain(us)
+	if err != nil {
+		return errors.New("更新后查询用户失败")
+	}
+	err = r.cache.Set(ctx, us.Id, uss)
+	if err != nil {
+		//缓存失败
+		//打个日志 监控
+	}
+	return nil
 }
 func (ropo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 	return dao.User{

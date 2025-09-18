@@ -355,6 +355,8 @@ func (h *UserHandler) ProfileJWT(ctx *gin.Context) {
 		AboutMe  string `json:"AboutMe"`
 		Birthday string `json:"Birthday"`
 	}
+	ctx.Header("Cache-Control", "no-store")
+
 	uc, ok := ctx.MustGet("user").(*UserClaims)
 	if !ok {
 		ctx.AbortWithStatus(http.StatusUnauthorized)
