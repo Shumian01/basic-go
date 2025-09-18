@@ -15,21 +15,25 @@ var (
 	ErrCodeSendTooMany        = repository.ErrSetCodeTooMany
 )
 
-type CodeService struct {
-	repo   *repository.CodeRepository
-	smsSvc sms.Service
+type CodeService interface {
+	Send(ctx context.Context, biz string, phone string) error
+	Verify(ctx context.Context, biz string, phone string, inputCode string) (bool,
+		error)
+}
+type codeService struct {
+	repo repository.CodeRepository
+	sms  sms.Service
 }
 
-func NewCodeService(repo *repository.CodeRepository,
-	smsSvc sms.Service) *CodeService {
-	return &CodeService{
-		repo:   repo,
-		smsSvc: smsSvc,
+func NewCodeService(repo repository.CodeRepository, smsSvc sms.Service) CodeService {
+	return &codeService{
+		repo: repo,
+		sms:  smsSvc,
 	}
 }
 
 // Send 发验证码 我需要什么参数
-func (svc *CodeService) Send(ctx context.Context,
+func (svc *codeService) Send(ctx context.Context,
 	biz string, phone string) error {
 	//phone_code:login:150xxxxx
 	//code:$biz:150xxxxx
@@ -43,7 +47,7 @@ func (svc *CodeService) Send(ctx context.Context,
 	}
 	//前面成功了
 	//发出去
-	err = svc.smsSvc.Send(ctx, codeTpliId, []string{code}, phone)
+	err = svc.sms.Send(ctx, codeTpliId, []string{code}, phone)
 
 	//if err != nil {
 	//	//这个地方怎么办？
@@ -57,12 +61,12 @@ func (svc *CodeService) Send(ctx context.Context,
 	return err
 }
 
-func (svc *CodeService) Verify(ctx context.Context, biz string,
+func (svc *codeService) Verify(ctx context.Context, biz string,
 	phone string, inputCode string) (bool, error) {
 	return svc.repo.Verify(ctx, biz, phone, inputCode)
 }
 
-func (svc *CodeService) geneerateCode() string {
+func (svc *codeService) geneerateCode() string {
 	//六位数. num在0,99999之间
 	num := rand.Intn(1000000)
 	//不够6位 加前导0

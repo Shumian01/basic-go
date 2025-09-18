@@ -17,11 +17,11 @@ const biz = "login"
 var _ headler = &UserHandler{}
 
 type UserHandler struct {
-	svc     *service.UserService
-	codeSvc *service.CodeService
+	svc     service.UserService
+	codeSvc service.CodeService
 }
 
-func NewUserHandler(svc *service.UserService, codeSvc *service.CodeService) *UserHandler {
+func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserHandler {
 	return &UserHandler{
 		svc:     svc,
 		codeSvc: codeSvc,
@@ -278,26 +278,19 @@ func (u *UserHandler) LogOut(ctx *gin.Context) {
 func (u *UserHandler) Profile(ctx *gin.Context) {
 	sess := sessions.Default(ctx)
 	sess.Get("userId")
+
 	ctx.String(http.StatusOK, "czh 的个人主页")
 
 }
 func (u *UserHandler) ProfileJWT(ctx *gin.Context) {
-	c, ok := ctx.Get("claims")
-	//你可以断定必然有claims
-	if !ok {
-		//可以考虑监控住这里
-		ctx.String(http.StatusOK, "系统错误")
-		return
+	type Profile struct {
+		Email    string
+		Phone    string
+		Nickname string
+		Birthday string
+		AboutMe  string
 	}
-	//ok代表 是不是userClaims
-	claims, ok := c.(*UserClaims)
-	if !ok {
-		ctx.String(http.StatusOK, "系统错误")
-		return
-	}
-	println(claims.Uid)
-	ctx.String(http.StatusOK, "你的profile")
-	//这边就是补充profile其他代码
+
 }
 
 type UserClaims struct {
