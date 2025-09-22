@@ -2,14 +2,15 @@ package web
 
 import (
 	"fmt"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 	"net/http"
 	"regexp"
 	"time"
 	"webook/internal/domain"
 	"webook/internal/service"
+
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 const (
@@ -150,15 +151,15 @@ func (h *UserHandler) Signup(ctx *gin.Context) {
 
 	// 密码校验
 	if len(req.Password) < 9 {
-		ctx.String(http.StatusBadRequest, "密码必须至少9位")
+		ctx.String(http.StatusBadRequest, "密码格式不对")
 		return
 	}
 	if !regexp.MustCompile(`[a-zA-Z]`).MatchString(req.Password) {
-		ctx.String(http.StatusBadRequest, "密码必须包含字母")
+		ctx.String(http.StatusBadRequest, "密码格式不对")
 		return
 	}
 	if !regexp.MustCompile(`\d`).MatchString(req.Password) {
-		ctx.String(http.StatusBadRequest, "密码必须包含数字")
+		ctx.String(http.StatusBadRequest, "密码格式不对")
 		return
 	}
 	//调用svc方法进行注册
@@ -171,7 +172,7 @@ func (h *UserHandler) Signup(ctx *gin.Context) {
 		return
 	}
 	if err != nil {
-		ctx.String(http.StatusBadRequest, "系统错误")
+		ctx.String(http.StatusOK, "系统异常")
 		return
 	}
 	fmt.Printf("注册信息：%+v\n", req)

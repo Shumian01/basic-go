@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "b094f512be9efa6c",
+        "id": "079f5f923721c3c8",
         "type": "tabs",
         "children": [
           {
-            "id": "790077ae543d217a",
+            "id": "181b7dec8f6f1826",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -19,18 +19,6 @@
               },
               "icon": "lucide-file",
               "title": "weeek3(抽象接口,短信服务)"
-            }
-          },
-          {
-            "id": "b5a92917eed28ac3",
-            "type": "leaf",
-            "state": {
-              "type": "excalidraw",
-              "state": {
-                "file": "面向接口编程.md"
-              },
-              "icon": "excalidraw-icon",
-              "title": "面向接口编程"
             }
           }
         ]
@@ -168,7 +156,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 356.5
+    "width": 200
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -182,23 +170,24 @@
       "obsidian-excalidraw-plugin:新建绘图文件": false
     }
   },
-  "active": "790077ae543d217a",
+  "active": "ae63299d65dfb73d",
   "lastOpenFiles": [
+    "Pasted image 20250922143039.png",
+    "Pasted image 20250922142452.png",
+    "Pasted image 20250922142352.png",
+    "Pasted image 20250922142300.png",
+    "Pasted image 20250922142155.png",
+    "Pasted image 20250922142107.png",
+    "Pasted image 20250922105523.png",
+    "Pasted image 20250922103957.png",
+    "Pasted image 20250922103454.png",
+    "面向接口编程.md",
+    "未命名.base",
+    "Golang/weeek3(抽象接口,短信服务).md",
     "Pasted image 20250920162044.png",
     "Pasted image 20250920154527.png",
-    "Pasted image 20250920154439.png",
-    "Pasted image 20250920153734.png",
-    "Pasted image 20250920153450.png",
-    "Golang/inmage/Pasted image 20250920152840.png",
-    "Golang/inmage/Pasted image 20250920152833.png",
-    "Golang/inmage/Pasted image 20250920152803.png",
-    "Golang/inmage/Pasted image 20250920144611.png",
-    "Golang/inmage/Pasted image 20250920143724.png",
-    "Golang/inmage/Pasted image 20250920143318.png",
     "Golang/week1(Gin,GORM).md",
-    "Golang/weeek3(抽象接口,短信服务).md",
     "Golang/week2(jwt,redis).md",
-    "面向接口编程.md",
     "Golang/inmage/Drawing 2025-09-17 16.19.35.excalidraw.md",
     "Golang/inmage",
     "Golang/k8s入门.md",

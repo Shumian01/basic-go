@@ -483,4 +483,30 @@ shumian@xzl:/mnt/f/GoCode/src/basic-go/webook$ wrk -t4 -c20 -d10s -s ./scripts/w
 
 ```
 mockgen -source=./webook/internal/service/user.go -package=svcmocks -destination=./webook/internal/service/mocks/user.mock.go
+
 ```
+
+#### 使用mock
+![[Pasted image 20250922103957.png]]
+#### 测试
+![[Pasted image 20250922105523.png]]
+
+####  设计测试用例:注册成功
+
+![[Pasted image 20250922142107.png]]
+
+#### 设计测试用例:注册成功 mock
+![[Pasted image 20250922142155.png]]
+
+#### 设计测试用例:注册成功的http请求与响应
+![[Pasted image 20250922142300.png]]
+
+#### 测试数据校验逻辑
+
+![[Pasted image 20250922142352.png]]
+
+#### 测试bind方法出错的用例
+![[Pasted image 20250922142452.png]]
+#### 步骤总结
+![[Pasted image 20250922143039.png]]
+## 测试service
