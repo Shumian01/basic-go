@@ -12,13 +12,20 @@ import (
 	"webook/internal/service"
 )
 
-const biz = "login"
+const (
+	emailRegexPattern = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$"
+	// 和上面比起来，用 ` 看起来就比较清爽
+	passwordRegexPattern = `^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$`
+	biz                  = "login"
+)
 
 var _ headler = &UserHandler{}
 
 type UserHandler struct {
-	svc     service.UserService
-	codeSvc service.CodeService
+	emailRexExp    *regexp.Regexp
+	passwordRexExp *regexp.Regexp
+	svc            service.UserService
+	codeSvc        service.CodeService
 }
 
 func NewUserHandler(svc service.UserService, codeSvc service.CodeService) *UserHandler {
@@ -117,7 +124,7 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 	}
 }
 
-func (u *UserHandler) Signup(ctx *gin.Context) {
+func (h *UserHandler) Signup(ctx *gin.Context) {
 	type SignupReq struct {
 		Email           string `json:"email"`
 		Password        string `json:"password"`
@@ -129,7 +136,6 @@ func (u *UserHandler) Signup(ctx *gin.Context) {
 		ctx.String(http.StatusBadRequest, "请求格式错误")
 		return
 	}
-
 	// 邮箱正则
 	emailRegex := regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 	if !emailRegex.MatchString(req.Email) {
@@ -156,7 +162,7 @@ func (u *UserHandler) Signup(ctx *gin.Context) {
 		return
 	}
 	//调用svc方法进行注册
-	err := u.svc.SignUp(ctx, domain.User{
+	err := h.svc.SignUp(ctx, domain.User{
 		Email:    req.Email,
 		Password: req.Password,
 	})

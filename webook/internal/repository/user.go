@@ -30,6 +30,7 @@ type CachedUserRepository struct {
 	cache cache.UserCache
 }
 
+//UserRepository 是核心，他有不同的实现
 func NewUserRepository(dao dao.UserDAO,
 	c cache.UserCache) UserRepository {
 	return &CachedUserRepository{
@@ -113,7 +114,7 @@ func (r *CachedUserRepository) UpdateNonZeroFields(ctx context.Context,
 	}
 	return nil
 }
-func (ropo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
+func (repo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 	return dao.User{
 		Id: u.Id,
 		Email: sql.NullString{
