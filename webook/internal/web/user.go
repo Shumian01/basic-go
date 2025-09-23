@@ -186,6 +186,7 @@ func (u *UserHandler) LoginJWT(ctx *gin.Context) {
 	}
 	var req LoginReq
 	if err := ctx.Bind(&req); err != nil {
+		ctx.String(http.StatusBadRequest, "请求格式错误")
 		return
 	}
 	user, err := u.svc.Login(ctx, req.Email, req.Password)

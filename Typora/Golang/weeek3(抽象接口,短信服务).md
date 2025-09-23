@@ -509,4 +509,30 @@ mockgen -source=./webook/internal/service/user.go -package=svcmocks -destination
 ![[Pasted image 20250922142452.png]]
 #### 步骤总结
 ![[Pasted image 20250922143039.png]]
-## 测试service
+### 测试service
+
+#### 测试login
+![[Pasted image 20250922162244.png]]
+
+![[Pasted image 20250922163228.png]]
+![[Pasted image 20250922163241.png]]
+
+![[Pasted image 20250922163254.png]]
+
+### 测试Repository
+
+### 测试cache
+![[Pasted image 20250923140911.png]]
+### sql mock入门
+![[Pasted image 20250923172446.png]]
+### 测试DAO
+![[Pasted image 20250923171305.png]]
+
+#### 定义测试用例
+![[Pasted image 20250923172626.png]]
+####  运行测试代码
+![[Pasted image 20250923173613.png]]
+#### 插入成功用例
+![[Pasted image 20250923173641.png]]
+
+![[Pasted image 20250923220840.png]]

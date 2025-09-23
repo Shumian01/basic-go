@@ -30,7 +30,7 @@ type CachedUserRepository struct {
 	cache cache.UserCache
 }
 
-//UserRepository 是核心，他有不同的实现
+// UserRepository 是核心，他有不同的实现
 func NewUserRepository(dao dao.UserDAO,
 	c cache.UserCache) UserRepository {
 	return &CachedUserRepository{
@@ -77,16 +77,12 @@ func (r *CachedUserRepository) FindById(ctx context.Context, id int64) (domain.U
 		return domain.User{}, err
 	}
 	u = r.entityToDomain(ue)
-	err = r.cache.Set(ctx, id, u)
+
 	go func() {
-		if err != nil {
-			//缓存失败
-			//打个日志 监控
-
-		}
+		_ = r.cache.Set(ctx, id, u)
 	}()
-	return u, err
 
+	return u, nil
 	//这里这么办？要不要在数据库加载？
 	//选加载 ---做好兜底,万一redis真的挂了 要保护数据库
 	//数据库限流保护数据库
@@ -133,6 +129,10 @@ func (repo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 }
 
 func (r *CachedUserRepository) entityToDomain(u dao.User) domain.User {
+	var birthday time.Time
+	if u.Birthday != 0 {
+		birthday = time.UnixMilli(u.Birthday)
+	}
 	return domain.User{
 		Id:       u.Id,
 		Email:    u.Email.String,
@@ -140,6 +140,7 @@ func (r *CachedUserRepository) entityToDomain(u dao.User) domain.User {
 		Password: u.Password,
 		AboutMe:  u.AboutMe,
 		Nickname: u.Nickname,
-		Birthday: time.UnixMilli(u.Birthday),
+		Birthday: birthday,
+		Ctime:    time.UnixMilli(u.Ctime),
 	}
 }

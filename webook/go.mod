@@ -3,6 +3,7 @@ module webook
 go 1.24.4
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ecodeclub/ekit v0.0.10
 	github.com/gin-contrib/cors v1.7.6
 	github.com/gin-contrib/sessions v1.0.4
@@ -12,7 +13,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/google/wire v0.7.0
 	github.com/prometheus/client_golang v1.23.0
-	github.com/redis/go-redis/v9 v9.12.1
+	github.com/redis/go-redis/v9 v9.14.0
 	github.com/stretchr/testify v1.11.1
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.1.0
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/sms v1.1.0
