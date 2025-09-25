@@ -105,7 +105,13 @@ func (u *UserHandler) SendLoginSMSCode(ctx *gin.Context) {
 	if err := ctx.Bind(&req); err != nil {
 		return
 	}
-
+	if req.Phone == "" {
+		ctx.JSON(http.StatusOK, Result{
+			Code: 4,
+			Msg:  "输入有误",
+		})
+		return
+	}
 	const biz = "login"
 	err := u.codeSvc.Send(ctx, biz, req.Phone)
 	switch err {

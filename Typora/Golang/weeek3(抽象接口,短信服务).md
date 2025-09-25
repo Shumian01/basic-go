@@ -536,3 +536,18 @@ mockgen -source=./webook/internal/service/user.go -package=svcmocks -destination
 ![[Pasted image 20250923173641.png]]
 
 ![[Pasted image 20250923220840.png]]
+
+# 集成测试
+![[Pasted image 20250923234737.png]]
+![[Pasted image 20250923235045.png]]
+
+## 集成测试:以发验证码为例
+![[Pasted image 20250923235452.png]]
+
+### 定义测试用例
+![[Pasted image 20250924233253.png]]
+
+### 运行测试用例
+![[Pasted image 20250924233311.png]]
+### 总结
+![[Pasted image 20250925000238.png]]
