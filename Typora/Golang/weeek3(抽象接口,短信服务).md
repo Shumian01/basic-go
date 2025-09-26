@@ -551,3 +551,59 @@ mockgen -source=./webook/internal/service/user.go -package=svcmocks -destination
 ![[Pasted image 20250924233311.png]]
 ### 总结
 ![[Pasted image 20250925000238.png]]
+
+# 第三方服务调用治理
+![[Pasted image 20250925081311.png]]
+## 整体思路
+![[Pasted image 20250925081603.png]]
+## 客户端限流
+![[Pasted image 20250925082119.png]]
+##  第一种做法:整体限流
+![[Pasted image 20250925083253.png]]
+## 限流器抽象
+![[Pasted image 20250925085304.png]]
+## 在已有代码里面集成限流器
+![[Pasted image 20250925101845.png]]
+## 进一步改进
+![[Pasted image 20250925103547.png]]
+
+## 利用装饰器来改进
+![[Pasted image 20250925103727.png]]## 如何理解装饰器模式
+![[Pasted image 20250925103925.png]]
+## 装饰器模式实现限流的短信服务
+![[Pasted image 20250925104050.png]]
+
+## 单元测试装饰器
+![[Pasted image 20250925105026.png]]
+## 装饰器另外一种实现
+![[Pasted image 20250925111616.png]]
+## 开闭原则 非侵入式 装饰器
+![[Pasted image 20250926103704.png]]
+
+## 自动切换不同服务商
+### 服务商出问题
+![[Pasted image 20250926104831.png]]
+### 怎么知道服务商出现问题
+![[Pasted image 20250926104844.png]]
+### 第一种策略failover
+![[Pasted image 20250926105143.png]]
+#### failover 第一种实现
+![[Pasted image 20250926105742.png]]
+#### failover 第一种实现的测试
+![[Pasted image 20250926110215.png]]
+![[Pasted image 20250926110239.png]]
+
+#### failover第二种实现
+
+![[Pasted image 20250926110628.png]]
+![[Pasted image 20250926111634.png]]
+![[Pasted image 20250926111739.png]]
+### 第二种 策略
+![[Pasted image 20250926112346.png]]
+#### 基于超时响应的判定
+![[Pasted image 20250926115421.png]]
+#### 具体实现
+![[Pasted image 20250926115504.png]]
+#### 单元测试
+![[Pasted image 20250926121742.png]]
+![[Pasted image 20250926121834.png]]
