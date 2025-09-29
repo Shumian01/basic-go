@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"errors"
 	"time"
@@ -9,7 +10,6 @@ import (
 )
 
 import (
-	"context"
 	"webook/internal/domain"
 )
 
@@ -24,10 +24,19 @@ type UserRepository interface {
 	FindById(ctx context.Context, id int64) (domain.User, error)
 	Create(ctx context.Context, u domain.User) error
 	UpdateNonZeroFields(ctx context.Context, u domain.User) error
+	FindByWechat(ctx context.Context, openID string) (domain.User, error)
 }
 type CachedUserRepository struct {
 	dao   dao.UserDAO
 	cache cache.UserCache
+}
+
+func (c *CachedUserRepository) FindByWechat(ctx context.Context, openID string) (domain.User, error) {
+	u, err := c.dao.FindByWechat(ctx, openID)
+	if err != nil {
+		return domain.User{}, err
+	}
+	return c.entityToDomain(u), nil
 }
 
 // UserRepository 是核心，他有不同的实现
@@ -125,6 +134,14 @@ func (repo *CachedUserRepository) domainToEntity(u domain.User) dao.User {
 		Birthday: u.Birthday.UnixMilli(),
 		AboutMe:  u.AboutMe,
 		Nickname: u.Nickname,
+		WechatOpenID: sql.NullString{
+			String: u.WechatInfo.OpenID,
+			Valid:  u.WechatInfo.OpenID != "",
+		},
+		WechatUnionID: sql.NullString{
+			String: u.WechatInfo.UnionID,
+			Valid:  u.WechatInfo.UnionID != "",
+		},
 	}
 }
 
@@ -142,5 +159,9 @@ func (r *CachedUserRepository) entityToDomain(u dao.User) domain.User {
 		Nickname: u.Nickname,
 		Birthday: birthday,
 		Ctime:    time.UnixMilli(u.Ctime),
+		WechatInfo: domain.WechatInfo{
+			UnionID: u.WechatUnionID.String,
+			OpenID:  u.WechatOpenID.String,
+		},
 	}
 }

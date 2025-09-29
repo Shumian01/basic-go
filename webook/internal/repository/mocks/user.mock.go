@@ -10,7 +10,7 @@
 package repomocks
 
 import (
-	context "context"
+	"context"
 	reflect "reflect"
 	domain "webook/internal/domain"
 
@@ -22,6 +22,11 @@ type MockUserRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockUserRepositoryMockRecorder
 	isgomock struct{}
+}
+
+func (m *MockUserRepository) FindByWechat(ctx context.context.Context, openID string)  (domain.User, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 // MockUserRepositoryMockRecorder is the mock recorder for MockUserRepository.

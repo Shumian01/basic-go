@@ -3,14 +3,16 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/google/wire"
 	"webook/internal/repository"
 	"webook/internal/repository/cache"
 	"webook/internal/repository/dao"
 	"webook/internal/service"
 	"webook/internal/web"
+	"webook/internal/web/jwt"
 	"webook/ioc"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/wire"
 )
 
 func InitWebServer() *gin.Engine {
@@ -25,11 +27,15 @@ func InitWebServer() *gin.Engine {
 		service.NewUserService, service.NewCodeService,
 		//基于内存实现
 		ioc.InitSMSService,
+		ioc.InitOAuth2WechatService,
+		web.NewOAuth2WechatHandler,
 		web.NewUserHandler,
+		ioc.NewWechatHandler,
+		jwt.NewRedisJWTHandler,
 		//中间件呢?
 		//注册路由呢
 		//gin.Default,
-		ioc.WebServer,
+		ioc.InitWebServer,
 		ioc.InitMiddlewares,
 	)
 	return new(gin.Engine)

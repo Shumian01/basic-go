@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"time"
+
 	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
-	"time"
 )
 
 var (
@@ -18,11 +19,19 @@ type UserDAO interface {
 	FindByEmail(ctx context.Context, email string) (User, error)
 	FindByPhone(ctx context.Context, phone string) (User, error)
 	FindById(ctx context.Context, id int64) (User, error)
+	FindByWechat(ctx context.Context, openID string) (User, error)
 	Insert(ctx context.Context, u User) error
 	UpdateById(ctx context.Context, entity User) error
 }
 type GORMUserDAO struct {
 	db *gorm.DB
+}
+
+func (dao *GORMUserDAO) FindByWechat(ctx context.Context, openID string) (User, error) {
+	var u User
+	err := dao.db.WithContext(ctx).Where("wechat_open_id = ?", openID).First(&u).Error
+	//err := dao.db.WithContext(ctx).First(&u, "email = ?").Error
+	return u, err
 }
 
 func NewUserDAO(db *gorm.DB) UserDAO {
@@ -99,7 +108,9 @@ type User struct {
 	Ctime int64
 	// 更新时间
 	Utime int64
-
+	//微信的字段
+	WechatUnionID sql.NullString `gorm:"unique"`
+	WechatOpenID  sql.NullString `gorm:"unique"`
 	// json 存储
 	//Addr string
 }

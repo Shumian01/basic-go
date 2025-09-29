@@ -10,9 +10,9 @@
 package svcmocks
 
 import (
-	context "context"
+	"context"
 	reflect "reflect"
-	domain "webook/internal/domain"
+	"webook/internal/domain"
 
 	gomock "go.uber.org/mock/gomock"
 )
@@ -22,6 +22,16 @@ type MockUserService struct {
 	ctrl     *gomock.Controller
 	recorder *MockUserServiceMockRecorder
 	isgomock struct{}
+}
+
+func (m *MockUserService) FindOrCreateWeChat(ctx context.context.Context, wechatinfo domain.domain.WechatInfo)  (domain.User, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
+func (m *MockUserService) FindByWeChat(ctx context.context.Context, wechatinfo domain.domain.WechatInfo)  (domain.User, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 // MockUserServiceMockRecorder is the mock recorder for MockUserService.

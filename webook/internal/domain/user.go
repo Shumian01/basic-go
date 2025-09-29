@@ -13,9 +13,9 @@ type User struct {
 	Birthday time.Time
 	AboutMe  string
 
-	Phone string
-
-	Ctime time.Time
+	Phone      string
+	WechatInfo WechatInfo
+	Ctime      time.Time
 
 	//Addr Address
 }

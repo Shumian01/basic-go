@@ -10,7 +10,7 @@
 package daomocks
 
 import (
-	context "context"
+	"context"
 	reflect "reflect"
 	dao "webook/internal/repository/dao"
 
@@ -22,6 +22,11 @@ type MockUserDAO struct {
 	ctrl     *gomock.Controller
 	recorder *MockUserDAOMockRecorder
 	isgomock struct{}
+}
+
+func (m *MockUserDAO) FindByWechat(ctx context.context.Context, openID string)  (User, error) {
+	//TODO implement me
+	panic("implement me")
 }
 
 // MockUserDAOMockRecorder is the mock recorder for MockUserDAO.

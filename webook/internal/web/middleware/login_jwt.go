@@ -1,22 +1,23 @@
 package middleware
 
 import (
+	"net/http"
+	ijwt "webook/internal/web/jwt"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
-	"log"
-	"net/http"
-	"strings"
-	"time"
-	"webook/internal/web"
 )
 
 // LoginJWTMiddlewareBuilder  JWT登录校验
 type LoginJWTMiddlewareBuilder struct {
 	paths []string
+	ijwt.Handler
 }
 
-func NewLoginJWTMiddlewareBuilder() *LoginJWTMiddlewareBuilder {
-	return &LoginJWTMiddlewareBuilder{}
+func NewLoginJWTMiddlewareBuilder(jwtHdl ijwt.Handler) *LoginJWTMiddlewareBuilder {
+	return &LoginJWTMiddlewareBuilder{
+		Handler: jwtHdl,
+	}
 }
 func (l *LoginJWTMiddlewareBuilder) IgnorePaths(path string) *LoginJWTMiddlewareBuilder {
 	l.paths = append(l.paths, path)
@@ -33,20 +34,8 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 		}
 
 		//我现在用JWT校验
-		tokenHeader := ctx.GetHeader("Authorization")
-		if tokenHeader == "" {
-			//没登录
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-		segs := strings.Split(tokenHeader, " ")
-		if len(segs) != 2 {
-			//没登录 有人瞎搞
-			ctx.AbortWithStatus(http.StatusUnauthorized)
-			return
-		}
-		tokenStr := segs[1]
-		claims := &web.UserClaims{}
+		tokenStr := l.ExtractToken(ctx)
+		claims := &ijwt.UserClaims{}
 		//ParseWithClaims一定要传指针
 		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (any, error) {
 			return []byte("dopWHWvRXiyHULAkR90XQsR06Uvl7PFX"), nil
@@ -63,26 +52,20 @@ func (l *LoginJWTMiddlewareBuilder) Build() gin.HandlerFunc {
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		//刷新登陆状态
-		//每十秒刷新
 		if claims.UserAgent != ctx.Request.UserAgent() {
 			//严重的安全问题
 			//要加监控
 			ctx.AbortWithStatus(http.StatusUnauthorized)
 			return
 		}
-		now := time.Now()
-		if claims.ExpiresAt.Sub(now) < time.Second*50 {
-			claims.ExpiresAt = jwt.NewNumericDate(time.Now().Add(time.Minute))
-			tokenStr, err := token.SignedString([]byte("dopWHWvRXiyHULAkR90XQsR06Uvl7PFX"))
-			if err != nil {
-				//记录日志
-				log.Println("jwt续约失败", err)
-			}
-			//产生新token
-			ctx.Header("x-jwt-token", tokenStr)
+		//验证ssid
+		// if redis 崩了 return
+		err = l.CheckSession(ctx, claims.Ssid)
+		if err != nil {
+			// 要么redis出问题 要么已经退出登录
+			ctx.AbortWithStatus(http.StatusUnauthorized)
+			return
 		}
-
 		ctx.Set("user", claims)
 	}
 }

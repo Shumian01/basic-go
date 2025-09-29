@@ -3,9 +3,10 @@ package service
 import (
 	"context"
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"webook/internal/domain"
 	"webook/internal/repository"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 var ErrUserDuplicated = repository.ErrUserDuplicated
@@ -16,11 +17,26 @@ type UserService interface {
 	SignUp(ctx context.Context, u domain.User) error
 	Login(ctx context.Context, email string, password string) (domain.User, error)
 	FindOrCreate(ctx context.Context, phone string) (domain.User, error)
+	FindOrCreateByWeChat(ctx context.Context, wechatinfo domain.WechatInfo) (domain.User, error)
 	Profile(ctx context.Context, id int64) (domain.User, error)
 	UpdateNonSensitiveInfo(ctx context.Context, user domain.User) error
 }
 type userService struct {
 	repo repository.UserRepository
+}
+
+func (svc *userService) FindOrCreateByWeChat(ctx context.Context, info domain.WechatInfo) (domain.User, error) {
+	u, err := svc.repo.FindByWechat(ctx, info.OpenID)
+	if err != repository.ErrUserNotFound {
+		return u, err
+	}
+	err = svc.repo.Create(ctx, domain.User{
+		WechatInfo: info,
+	})
+	if err != nil && err != repository.ErrUserDuplicated {
+		return u, err
+	}
+	return svc.repo.FindByWechat(ctx, info.OpenID)
 }
 
 func NewUserService(repo repository.UserRepository) UserService {
